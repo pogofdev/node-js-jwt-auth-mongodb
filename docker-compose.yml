@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+#  server-app:
+#    #image: registry.gitlab.com/poisongass/thinh_vuong_docker_test:v0.3
+#    image: registry.gitlab.com/poisongass/server-app:1.0.0
+#    restart: unless-stopped
+#    ports:
+#      - 8080:8080
+#    volumes:
+#      #- /Users/pogofdev_01/vol/storage/app:/var/www/storage/app
+#      - .:/usr/src/app
+#    build:
+#      context: .
+#      dockerfile: .docker/Dockerfile
+    #env_file: .env_dev
+#    environment:
+#      APP_ENV: local
+#      CONTAINER_ROLE: app
+
+  mongo-db:
+    image: mongo
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /Users/poisongas/vol/mongodb/database:/data/db
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+
+
+
+  #docker build -t registry.gitlab.com/poisongass/thinh_vuong_docker_test .
+#https://javicastilla.com/2020/08/21/laravel-docker-cron-jobs/
