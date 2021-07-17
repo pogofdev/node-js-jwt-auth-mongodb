@@ -24,7 +24,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /Users/poisongas/vol/mongodb/database:/data/db
+      - /home/pogofdev/mywork/node-js-jwt-auth-mongodb/vol/mongodb/database:/data/db
     ports:
       - 27017:27017
     restart: unless-stopped

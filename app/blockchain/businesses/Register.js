@@ -6,7 +6,7 @@ const {buildCCPIntegrate} = require("../utils/MyUtils");
 const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('../utils/CAUtil.js');
 const { buildCCPOrg1, buildWallet } = require('../utils/AppUtil.js');
 
-const channelName = 'integrate';
+const channelName = 'mychannel';
 const chaincodeName = 'basic';
 const mspOrg1 = 'integrate-pogofdev-com';
 const walletPath = path.join(__dirname, 'wallet');
