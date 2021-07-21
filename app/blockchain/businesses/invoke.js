@@ -54,7 +54,7 @@ const Invoke = {
             return {success:false,error:`Failed to submit transaction: ${error}`}
         }
     },
-    transfer: async function (fromUsername,toUsername,amount) {
+    transfer: async function (fromUsername,toUsername,amount,timeStamp,transType,description) {
         try {
 
             const ccp = buildCCPIntegrate();
@@ -80,7 +80,7 @@ const Invoke = {
             // Get the contract from the network.
             const contract = network.getContract('erc20token');
 
-            let rs = await contract.submitTransaction('Transfer', fromUsername,toUsername,amount);
+            let rs = await contract.submitTransaction('Transfer', fromUsername,toUsername,amount,timeStamp,transType,description);
 
             console.log('Transaction has been submitted');
 

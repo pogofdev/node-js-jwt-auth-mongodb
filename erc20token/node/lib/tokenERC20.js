@@ -15,6 +15,7 @@ const nameKey = 'name';
 const symbolKey = 'symbol';
 const decimalsKey = 'decimals';
 const totalSupplyKey = 'totalSupply';
+const transactionKey = 'transactionKey';
 
 class TokenERC20Contract extends Contract {
 
@@ -97,13 +98,16 @@ class TokenERC20Contract extends Contract {
      * @param {Integer} value The amount of token to be transferred
      * @returns {Boolean} Return whether the transfer was successful or not
      */
-    async Transfer(ctx,from, to, value) {
+    async Transfer(ctx, from, to, value, timeStamp,transType,description) {
         // const from = ctx.clientIdentity.getID();
-
-        const transferResp = await this._transfer(ctx, from, to, value);
+        const valueInt = parseInt(value)
+        const transferResp = await this._transfer(ctx, from, to, value, timeStamp,transType,description);
         if (!transferResp) {
             throw new Error('Failed to transfer');
         }
+
+        // const timestamp = Date.now()
+
 
         // Emit the Transfer event
         const transferEvent = {from, to, value: parseInt(value)};
@@ -121,7 +125,7 @@ class TokenERC20Contract extends Contract {
      * @param {Integer} value The amount of token to be transferred
      * @returns {Boolean} Return whether the transfer was successful or not
      */
-    async TransferFrom(ctx, from, to, value) {
+    async TransferFrom(ctx, from, to, value, timeStamp,transType,description) {
         const spender = ctx.clientIdentity.getID();
 
         // Retrieve the allowance of the spender
@@ -142,7 +146,7 @@ class TokenERC20Contract extends Contract {
             throw new Error('The spender does not have enough allowance to spend.');
         }
 
-        const transferResp = await this._transfer(ctx, from, to, value);
+        const transferResp = await this._transfer(ctx, from, to, value, timeStamp,transType,description);
         if (!transferResp || !transferResp.success) {
             throw new Error('Failed to transfer');
         }
@@ -152,15 +156,16 @@ class TokenERC20Contract extends Contract {
         await ctx.stub.putState(allowanceKey, Buffer.from(updatedAllowance.toString()));
         console.log(`spender ${spender} allowance updated from ${currentAllowance} to ${updatedAllowance}`);
 
+
         // Emit the Transfer event
         const transferEvent = {from, to, value: valueInt};
         ctx.stub.setEvent('Transfer', Buffer.from(JSON.stringify(transferEvent)));
 
         console.log('transferFrom ended successfully');
-        return transferResp
+        return {success: true, data: transaction, error: ''};
     }
 
-    async _transfer(ctx, from, to, value) {
+    async _transfer(ctx, from, to, value, timeStamp,transType,description) {
 
         // Convert value from string to int
         const valueInt = parseInt(value);
@@ -200,13 +205,21 @@ class TokenERC20Contract extends Contract {
         const fromUpdatedBalance = fromCurrentBalance - valueInt;
         const toUpdatedBalance = toCurrentBalance + valueInt;
 
+        const transKey1 = ctx.stub.createCompositeKey(transactionKey, [from, to, timeStamp.toString()])
+        const transKey2 = ctx.stub.createCompositeKey(transactionKey, [to, from, timeStamp.toString()])
+        const transaction = {from, to, amount: valueInt, fromUpdatedBalance, toUpdatedBalance, timeStamp,transType,description}
+        await ctx.stub.putState(transKey1, Buffer.from(JSON.stringify(transaction)));
+        await ctx.stub.putState(transKey2, Buffer.from(JSON.stringify(transaction)));
+
         await ctx.stub.putState(fromBalanceKey, Buffer.from(fromUpdatedBalance.toString()));
         await ctx.stub.putState(toBalanceKey, Buffer.from(toUpdatedBalance.toString()));
+        // await ctx.stub.putState(transKey, Buffer.from(JSON.stringify(transaction)));
+        // console.warn(transKey)
+        // console.warn(JSON.stringify(transaction))
+        console.warn(`client ${from} balance updated from ${fromCurrentBalance} to ${fromUpdatedBalance}`);
+        console.warn(`recipient ${to} balance updated from ${toCurrentBalance} to ${toUpdatedBalance}`);
 
-        console.log(`client ${from} balance updated from ${fromCurrentBalance} to ${fromUpdatedBalance}`);
-        console.log(`recipient ${to} balance updated from ${toCurrentBalance} to ${toUpdatedBalance}`);
-
-        return {success:true,data:{toUpdatedBalance,fromUpdatedBalance},error:''};
+        return {success: true, data: {toUpdatedBalance, fromUpdatedBalance, transaction}, error: ''};
     }
 
     /**
@@ -285,17 +298,16 @@ class TokenERC20Contract extends Contract {
      * @param {Integer} amount amount of tokens to be minted
      * @returns {Object} The balance
      */
-    async Mint(ctx,acountId, amount) {
+    async Mint(ctx, acountId, amount) {
 
         // Check minter authorization - this sample assumes Org1 is the central banker with privilege to mint new tokens
         const clientMSPID = ctx.clientIdentity.getMSPID();
         // Get ID of submitting client identity
         // const minter = ctx.clientIdentity.getID();
         const minter = acountId;
-        if ((clientMSPID !== 'integrate-pogofdev-com')||(ctx.clientIdentity.getID() !== `x509::/OU=client/CN=integrate::/C=US/ST=North Carolina/L=Raleigh/O=integrate.pogofdev.com/CN=ca1.integrate.pogofdev.com`)) {
+        if ((clientMSPID !== 'integrate-pogofdev-com') || (ctx.clientIdentity.getID() !== `x509::/OU=client/CN=integrate::/C=US/ST=North Carolina/L=Raleigh/O=integrate.pogofdev.com/CN=ca1.integrate.pogofdev.com`)) {
             throw new Error('client is not authorized to mint new tokens');
         }
-
 
 
         const amountInt = parseInt(amount);
@@ -334,7 +346,7 @@ class TokenERC20Contract extends Contract {
         ctx.stub.setEvent('Transfer', Buffer.from(JSON.stringify(transferEvent)));
 
         console.log(`minter account ${minter} balance updated from ${currentBalance} to ${updatedBalance}`);
-        return {balance:updatedBalance,totalSupply};
+        return {balance: updatedBalance, totalSupply};
     }
 
     /**
@@ -389,7 +401,7 @@ class TokenERC20Contract extends Contract {
      * @param {Context} ctx the transaction context
      * @returns {Number} Returns the account balance
      */
-    async ClientAccountBalance(ctx,accountId) {
+    async ClientAccountBalance(ctx, accountId) {
         // Get ID of submitting client identity
         // const clientAccountID = ctx.clientIdentity.getID();
 
@@ -401,22 +413,28 @@ class TokenERC20Contract extends Contract {
             // throw new Error(`the account ${accountId} does not exist`);
             // Retrieve the current balance of the recepient
             //create new balance account for this user
-           /* isNew = true
-            await ctx.stub.putState(balanceKey, Buffer.from(balance.toString()));
-            console.log(`create new balance for ${clientAccountID}`);
-            const transferEvent = {from: '0x0', to: clientAccountID, value: balance};
-            ctx.stub.setEvent('Transfer', Buffer.from(JSON.stringify(transferEvent)));*/
+            /* isNew = true
+             await ctx.stub.putState(balanceKey, Buffer.from(balance.toString()));
+             console.log(`create new balance for ${clientAccountID}`);
+             const transferEvent = {from: '0x0', to: clientAccountID, value: balance};
+             ctx.stub.setEvent('Transfer', Buffer.from(JSON.stringify(transferEvent)));*/
         } else {
             balance = parseInt(balanceBytes.toString());
         }
         // Emit the Transfer event
-        let totalSupply =0
-        if(accountId==='integrate'){
+        let totalSupply = 0
+        if (accountId === 'integrate') {
             const totalSupplyBytes = await ctx.stub.getState(totalSupplyKey);
             totalSupply = parseInt(totalSupplyBytes.toString());
         }
 
-        return {balance, clientAccountID: ctx.clientIdentity.getID(), clientMSPID: ctx.clientIdentity.getMSPID(),isNew,totalSupply};
+        return {
+            balance,
+            clientAccountID: ctx.clientIdentity.getID(),
+            clientMSPID: ctx.clientIdentity.getMSPID(),
+            isNew,
+            totalSupply
+        };
     }
 
 
@@ -427,7 +445,7 @@ class TokenERC20Contract extends Contract {
      * @param accountId
      * @returns {Number} Returns the account balance
      */
-    async CreateClientAccountBalance(ctx,accountId) {
+    async CreateClientAccountBalance(ctx, accountId) {
         // Get ID of submitting client identity
         // const clientAccountID = ctx.clientIdentity.getID();
 
@@ -451,7 +469,12 @@ class TokenERC20Contract extends Contract {
 
         // Emit the Transfer event
 
-        return {balance, clientAccountID: ctx.clientIdentity.getID(), clientMSPID: ctx.clientIdentity.getMSPID(),isNew};
+        return {
+            balance,
+            clientAccountID: ctx.clientIdentity.getID(),
+            clientMSPID: ctx.clientIdentity.getMSPID(),
+            isNew
+        };
     }
 
     // ClientAccountID returns the id of the requesting client's account.
@@ -461,6 +484,29 @@ class TokenERC20Contract extends Contract {
         // Get ID of submitting client identity
         const clientAccountID = ctx.clientIdentity.getID();
         return clientAccountID;
+    }
+
+
+    async getTransactions(ctx, accountId) {
+        const startKey = '';
+        const endKey = '';
+        // const resultsIterator = await this.ctx.stub.getStateByPartialCompositeKey(transactionKey, [accountId]);
+
+
+        const allResults = [];
+        for await (const {key, value} of ctx.stub.getStateByPartialCompositeKey(transactionKey, [accountId])) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            allResults.push({Key: key, Record: record});
+        }
+        console.info(allResults);
+        return (allResults);
     }
 
 }
