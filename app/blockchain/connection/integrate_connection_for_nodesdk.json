@@ -1,0 +1,172 @@
+{
+  "name": "fabric-network",
+  "x-type": "hlfv1",
+  "version": "1.0.0",
+  "channels": {
+    "mychannel": {
+      "orderers": [
+        "orderer1.pogofdev.com"
+      ],
+      "peers": [
+        "peer1.integrate.pogofdev.com",
+        "peer1.services.pogofdev.com",
+        "peer1.customer.pogofdev.com"
+      ]
+    }
+  },
+  "organizations": {
+    "customer.pogofdev.com": {
+      "mspid": "customer-pogofdev-com",
+      "peers": [
+        "peer1.customer.pogofdev.com"
+      ],
+      "orderers": [
+      ],
+      "certificateAuthorities": [
+        "ca1.customer.pogofdev.com"
+      ]
+    },
+    "integrate.pogofdev.com": {
+      "mspid": "integrate-pogofdev-com",
+      "peers": [
+        "peer1.integrate.pogofdev.com"
+      ],
+      "orderers": [
+      ],
+      "certificateAuthorities": [
+        "ca1.integrate.pogofdev.com"
+      ]
+    },
+    "pogofdev.com": {
+      "mspid": "pogofdev-com",
+      "peers": [
+      ],
+      "orderers": [
+        "orderer1.pogofdev.com"
+      ]
+    },
+    "services.pogofdev.com": {
+      "mspid": "services-pogofdev-com",
+      "peers": [
+        "peer1.services.pogofdev.com"
+      ],
+      "orderers": [
+      ],
+      "certificateAuthorities": [
+        "ca1.services.pogofdev.com"
+      ]
+    }
+  },
+  "orderers": {
+    "orderer1.pogofdev.com": {
+      "url": "grpcs://192.168.100.51:5009",
+      "grpcOptions": {
+        "ssl-target-name-override": "orderer1.pogofdev.com"
+      },
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIICmzCCAkKgAwIBAgIUXh3egO5sFJ336Mlh19zof3JRoqwwCgYIKoZIzj0EAwIw\nbDELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5vcnRoIENhcm9saW5hMRAwDgYDVQQH\nDAdSYWxlaWdoMRUwEwYDVQQKDAxwb2dvZmRldi5jb20xGzAZBgNVBAMMEnRsc2Nh\nLnBvZ29mZGV2LmNvbTAeFw0yMTA3MjAwNjI3MTVaFw0zMTA3MTgwNjI3MTVaMGwx\nCzAJBgNVBAYTAlVTMRcwFQYDVQQIDA5Ob3J0aCBDYXJvbGluYTEQMA4GA1UEBwwH\nUmFsZWlnaDEVMBMGA1UECgwMcG9nb2ZkZXYuY29tMRswGQYDVQQDDBJ0bHNjYS5w\nb2dvZmRldi5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASlvIy6hJpyeU9u\nORxO52nTcU/n/FFd1vRv3SSRH3mr2UyG6vQ4zP4HpNEaY/Y4mVE1NwbbsD32oJ6G\nx2rJPYNUo4HBMIG+MB0GA1UdDgQWBBTONzrARldW4hPqe1FcNv2SMPSvpTAfBgNV\nHSMEGDAWgBTONzrARldW4hPqe1FcNv2SMPSvpTAPBgNVHRMBAf8EBTADAQH/MA4G\nA1UdDwEB/wQEAwIBpjAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwPAYD\nVR0RBDUwM4cEwKhkM4IrdGxzY2EucG9nb2ZkZXYuY29tIEROUy4yOnRsc2NhLXBv\nZ29mZGV2LWNvbTAKBggqhkjOPQQDAgNHADBEAiB+5J42jYNOS/7Xzn4yQUPMkMTQ\n7n5TTp5HZl/BStZRXQIgdh46nuqA7ZfTHoMgNJX8aBrw2bHBK0KONY+olEEn1oI=\n-----END CERTIFICATE-----"
+      }
+    }
+  },
+  "peers": {
+    "peer1.integrate.pogofdev.com": {
+      "url": "grpcs://192.168.100.51:5003",
+      "grpcOptions": {
+        "ssl-target-name-override": "peer1.integrate.pogofdev.com"
+      },
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIIC3TCCAoSgAwIBAgIUFoH0rsZybX7DlJF3x3baQrsNZL8wCgYIKoZIzj0EAwIw\ngYExCzAJBgNVBAYTAlVTMRcwFQYDVQQIDA5Ob3J0aCBDYXJvbGluYTEQMA4GA1UE\nBwwHUmFsZWlnaDEfMB0GA1UECgwWaW50ZWdyYXRlLnBvZ29mZGV2LmNvbTEmMCQG\nA1UEAwwddGxzY2ExLmludGVncmF0ZS5wb2dvZmRldi5jb20wHhcNMjEwNzIwMDYy\nNjU0WhcNMzEwNzE4MDYyNjU0WjCBgTELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5v\ncnRoIENhcm9saW5hMRAwDgYDVQQHDAdSYWxlaWdoMR8wHQYDVQQKDBZpbnRlZ3Jh\ndGUucG9nb2ZkZXYuY29tMSYwJAYDVQQDDB10bHNjYTEuaW50ZWdyYXRlLnBvZ29m\nZGV2LmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABNARU3HhtEqW7M4kOC10\n7vbz/BsfOaSzq36DTXbHZ+AUE8jmJHlCQB1Fpuvi066NrgsAWPYonGV+JPOhGWmL\nsxujgdcwgdQwHQYDVR0OBBYEFCFZUfkL50Dj2LokZPf9s8R8lK9+MB8GA1UdIwQY\nMBaAFCFZUfkL50Dj2LokZPf9s8R8lK9+MA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0P\nAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBSBgNVHREE\nSzBJhwTAqGQzgkF0bHNjYTEuaW50ZWdyYXRlLnBvZ29mZGV2LmNvbSBETlMuMjp0\nbHNjYTEtaW50ZWdyYXRlLXBvZ29mZGV2LWNvbTAKBggqhkjOPQQDAgNHADBEAiAY\nYLk5tv9BpxMVGePqHV4wicWTEPjpeRj/wAveQzLPKAIgObrzNI0JwAwGY442LmC2\nd+9O1p3/tQKs8MN3J97mbRo=\n-----END CERTIFICATE-----"
+      }
+    },
+    "peer1.services.pogofdev.com": {
+      "url": "grpcs://192.168.100.51:5004",
+      "grpcOptions": {
+        "ssl-target-name-override": "peer1.services.pogofdev.com"
+      },
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIIC1jCCAnygAwIBAgIUMvTWF4j3RIgGRDqEa0nXV9uuBb8wCgYIKoZIzj0EAwIw\nfzELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5vcnRoIENhcm9saW5hMRAwDgYDVQQH\nDAdSYWxlaWdoMR4wHAYDVQQKDBVzZXJ2aWNlcy5wb2dvZmRldi5jb20xJTAjBgNV\nBAMMHHRsc2NhMS5zZXJ2aWNlcy5wb2dvZmRldi5jb20wHhcNMjEwNzIwMDYyNzM1\nWhcNMzEwNzE4MDYyNzM1WjB/MQswCQYDVQQGEwJVUzEXMBUGA1UECAwOTm9ydGgg\nQ2Fyb2xpbmExEDAOBgNVBAcMB1JhbGVpZ2gxHjAcBgNVBAoMFXNlcnZpY2VzLnBv\nZ29mZGV2LmNvbTElMCMGA1UEAwwcdGxzY2ExLnNlcnZpY2VzLnBvZ29mZGV2LmNv\nbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJkfoRQ8THFnhwv/dz4hofzCLLyD\nz7hlTgHthaCicz2dfo8zUUv0duJEw6WgdQQbzJd1GvdC5+SejKRDptxXwj2jgdUw\ngdIwHQYDVR0OBBYEFIYC8ByWU2LVLtF6mguYnMepl3/YMB8GA1UdIwQYMBaAFIYC\n8ByWU2LVLtF6mguYnMepl3/YMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQD\nAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBQBgNVHREESTBHhwTA\nqGQzgj90bHNjYTEuc2VydmljZXMucG9nb2ZkZXYuY29tIEROUy4yOnRsc2NhMS1z\nZXJ2aWNlcy1wb2dvZmRldi1jb20wCgYIKoZIzj0EAwIDSAAwRQIhAOIaf8pANK2Q\nwt7CGLT/vdQRHgUnlNLuGdQcWoQmcaNRAiBgZMlieMidR45buWAJZqS6KSmnh9W7\nBSbdpTNtioD5dw==\n-----END CERTIFICATE-----"
+      }
+    },
+    "peer1.customer.pogofdev.com": {
+      "url": "grpcs://192.168.100.51:5005",
+      "grpcOptions": {
+        "ssl-target-name-override": "peer1.customer.pogofdev.com"
+      },
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIIC1TCCAnygAwIBAgIUfBYw8yYMIu5nSUuD5AP7tmdi6jEwCgYIKoZIzj0EAwIw\nfzELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5vcnRoIENhcm9saW5hMRAwDgYDVQQH\nDAdSYWxlaWdoMR4wHAYDVQQKDBVjdXN0b21lci5wb2dvZmRldi5jb20xJTAjBgNV\nBAMMHHRsc2NhMS5jdXN0b21lci5wb2dvZmRldi5jb20wHhcNMjEwNzIwMDYyNjM0\nWhcNMzEwNzE4MDYyNjM0WjB/MQswCQYDVQQGEwJVUzEXMBUGA1UECAwOTm9ydGgg\nQ2Fyb2xpbmExEDAOBgNVBAcMB1JhbGVpZ2gxHjAcBgNVBAoMFWN1c3RvbWVyLnBv\nZ29mZGV2LmNvbTElMCMGA1UEAwwcdGxzY2ExLmN1c3RvbWVyLnBvZ29mZGV2LmNv\nbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABCs/i0PcvYV5qNbck1mXzNRVfsBQ\nhWjHQnTCGu1ZzpXxwO8Ao5i7CoKTInD9i2YmC9gQvOfQO7TPdxuKMcQydK2jgdUw\ngdIwHQYDVR0OBBYEFL3DXJrAzDOKd22/IvekziiPB/1CMB8GA1UdIwQYMBaAFL3D\nXJrAzDOKd22/IvekziiPB/1CMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQD\nAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBQBgNVHREESTBHhwTA\nqGQzgj90bHNjYTEuY3VzdG9tZXIucG9nb2ZkZXYuY29tIEROUy4yOnRsc2NhMS1j\ndXN0b21lci1wb2dvZmRldi1jb20wCgYIKoZIzj0EAwIDRwAwRAIgMLW69GaS/pFX\nTtlLIP//frQ4IvQKjXKSTiH3I3xYUJ0CIEZFj9vivot0hb8uglPQbOxXynhhyb1j\nv0UT5pXs+8xO\n-----END CERTIFICATE-----"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca1.integrate.pogofdev.com": {
+      "url": "https://192.168.100.51:5000",
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIICzzCCAnagAwIBAgIUddzaa48zpxUnOCrlB3Xujs0fHTQwCgYIKoZIzj0EAwIw\nfjELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5vcnRoIENhcm9saW5hMRAwDgYDVQQH\nDAdSYWxlaWdoMR8wHQYDVQQKDBZpbnRlZ3JhdGUucG9nb2ZkZXYuY29tMSMwIQYD\nVQQDDBpjYTEuaW50ZWdyYXRlLnBvZ29mZGV2LmNvbTAeFw0yMTA3MjAwNjI2NTRa\nFw0zMTA3MTgwNjI2NTRaMH4xCzAJBgNVBAYTAlVTMRcwFQYDVQQIDA5Ob3J0aCBD\nYXJvbGluYTEQMA4GA1UEBwwHUmFsZWlnaDEfMB0GA1UECgwWaW50ZWdyYXRlLnBv\nZ29mZGV2LmNvbTEjMCEGA1UEAwwaY2ExLmludGVncmF0ZS5wb2dvZmRldi5jb20w\nWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARdhtxahAEMH2lUG93nChVX7Y5RhkEY\noULNY+nTRwwko5QkxuLd6dnwgHm2ZAhiC563c5db+DWHfafIeFkbeV8qo4HRMIHO\nMB0GA1UdDgQWBBQi1FNDH5WTiaDlvkKnkuWxKNH+LzAfBgNVHSMEGDAWgBQi1FND\nH5WTiaDlvkKnkuWxKNH+LzAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIB\npjAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwTAYDVR0RBEUwQ4cEwKhk\nM4I7Y2ExLmludGVncmF0ZS5wb2dvZmRldi5jb20gRE5TLjI6Y2ExLWludGVncmF0\nZS1wb2dvZmRldi1jb20wCgYIKoZIzj0EAwIDRwAwRAIgGba4JPQC4ial4XUN3hKh\nfsLC4lcabCiLzmhz05/1HIYCIAttdy7nANeBGe116Q27MQlHrjpXVh12mIbAiFja\na9lK\n-----END CERTIFICATE-----"
+      },
+      "httpOptions": { "verify": "false" },
+      "caName": "ca1",
+      "registrar": { "enrollId": "admin", "enrollSecret": "adminpw"}
+    },
+    "ca1.services.pogofdev.com": {
+      "url": "https://192.168.100.51:5001",
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIICyTCCAnCgAwIBAgIUEtgG2+RIsgx2FuJ0ABTuJIrWoF0wCgYIKoZIzj0EAwIw\nfDELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5vcnRoIENhcm9saW5hMRAwDgYDVQQH\nDAdSYWxlaWdoMR4wHAYDVQQKDBVzZXJ2aWNlcy5wb2dvZmRldi5jb20xIjAgBgNV\nBAMMGWNhMS5zZXJ2aWNlcy5wb2dvZmRldi5jb20wHhcNMjEwNzIwMDYyNzM1WhcN\nMzEwNzE4MDYyNzM1WjB8MQswCQYDVQQGEwJVUzEXMBUGA1UECAwOTm9ydGggQ2Fy\nb2xpbmExEDAOBgNVBAcMB1JhbGVpZ2gxHjAcBgNVBAoMFXNlcnZpY2VzLnBvZ29m\nZGV2LmNvbTEiMCAGA1UEAwwZY2ExLnNlcnZpY2VzLnBvZ29mZGV2LmNvbTBZMBMG\nByqGSM49AgEGCCqGSM49AwEHA0IABHBWfW9QX0/sHwbtaI58+3uU6S3rqWZn5Tht\n8BuBHhsklBOcYxD47m3o2Shm/i3rd82utsmNLLqVOXLqv0d0+tWjgc8wgcwwHQYD\nVR0OBBYEFIL7io813sh52TU+v8mEPy/nV2I9MB8GA1UdIwQYMBaAFIL7io813sh5\n2TU+v8mEPy/nV2I9MA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgGmMB0G\nA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBKBgNVHREEQzBBhwTAqGQzgjlj\nYTEuc2VydmljZXMucG9nb2ZkZXYuY29tIEROUy4yOmNhMS1zZXJ2aWNlcy1wb2dv\nZmRldi1jb20wCgYIKoZIzj0EAwIDRwAwRAIgGq5BIf7ittBMdOQUYddlQTgh5xBm\nUxMq6Qcw/wbneyQCIGOqJWNExIpLprKa2Z/Uy96nEDuVWsEEtfHFnY11h257\n-----END CERTIFICATE-----"
+      },
+      "httpOptions": { "verify": "false" },
+      "caName": "ca1",
+      "registrar": { "enrollId": "admin", "enrollSecret": "adminpw"}
+    },
+    "ca1.customer.pogofdev.com": {
+      "url": "https://192.168.100.51:5002",
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIICyjCCAnCgAwIBAgIUdcHPCF1XtZjcH8p7KdJY5hK742AwCgYIKoZIzj0EAwIw\nfDELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5vcnRoIENhcm9saW5hMRAwDgYDVQQH\nDAdSYWxlaWdoMR4wHAYDVQQKDBVjdXN0b21lci5wb2dvZmRldi5jb20xIjAgBgNV\nBAMMGWNhMS5jdXN0b21lci5wb2dvZmRldi5jb20wHhcNMjEwNzIwMDYyNjM0WhcN\nMzEwNzE4MDYyNjM0WjB8MQswCQYDVQQGEwJVUzEXMBUGA1UECAwOTm9ydGggQ2Fy\nb2xpbmExEDAOBgNVBAcMB1JhbGVpZ2gxHjAcBgNVBAoMFWN1c3RvbWVyLnBvZ29m\nZGV2LmNvbTEiMCAGA1UEAwwZY2ExLmN1c3RvbWVyLnBvZ29mZGV2LmNvbTBZMBMG\nByqGSM49AgEGCCqGSM49AwEHA0IABBG0sgqUVY4Q+BfE3FPI278GvyRD9LnVfdIx\n6hm/T3bMxmcUq4O6/Kq2d8S4hdpVYewR4jRSakvwz2cu2a3p9iujgc8wgcwwHQYD\nVR0OBBYEFDkqkB9NgoAeNy8iV0DsXWb/LsrgMB8GA1UdIwQYMBaAFDkqkB9NgoAe\nNy8iV0DsXWb/LsrgMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgGmMB0G\nA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBKBgNVHREEQzBBhwTAqGQzgjlj\nYTEuY3VzdG9tZXIucG9nb2ZkZXYuY29tIEROUy4yOmNhMS1jdXN0b21lci1wb2dv\nZmRldi1jb20wCgYIKoZIzj0EAwIDSAAwRQIhAO1v2oi9EWdOOrvSC1S44KbAFshq\nxjEtIMeTRjqiK6+iAiAJjgJYGHpk9XyWJ7S8wx2RuDvUVH2CnZPrIHxpx0l0OQ==\n-----END CERTIFICATE-----"
+      },
+      "httpOptions": { "verify": "false" },
+      "caName": "ca1",
+      "registrar": { "enrollId": "admin", "enrollSecret": "adminpw"}
+    }
+  },
+  "entityMatchers": {
+    "orderer": [
+      { "mappedHost": "orderer1.pogofdev.com",
+        "pattern": "(\\w*)orderer1.pogofdev.com(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "orderer1.pogofdev.com",
+        "urlSubstitutionExp": "192.168.100.51:5009"
+      }
+    ],
+    "peer": [
+      { "mappedHost": "peer1.integrate.pogofdev.com",
+        "pattern": "(\\w*)peer1.integrate.pogofdev.com(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "peer1.integrate.pogofdev.com",
+        "urlSubstitutionExp": "192.168.100.51:5003"
+      },
+      { "mappedHost": "peer1.services.pogofdev.com",
+        "pattern": "(\\w*)peer1.services.pogofdev.com(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "peer1.services.pogofdev.com",
+        "urlSubstitutionExp": "192.168.100.51:5004"
+      },
+      { "mappedHost": "peer1.customer.pogofdev.com",
+        "pattern": "(\\w*)peer1.customer.pogofdev.com(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "peer1.customer.pogofdev.com",
+        "urlSubstitutionExp": "192.168.100.51:5005"
+      }
+    ],
+  "certificateAuthorities": [
+      { "mappedHost": "ca1.integrate.pogofdev.com",
+        "pattern": "(\\w*)ca1.integrate.pogofdev.com(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "ca1.integrate.pogofdev.com",
+        "urlSubstitutionExp": "192.168.100.51:5000"
+      },
+      { "mappedHost": "ca1.services.pogofdev.com",
+        "pattern": "(\\w*)ca1.services.pogofdev.com(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "ca1.services.pogofdev.com",
+        "urlSubstitutionExp": "192.168.100.51:5001"
+      },
+      { "mappedHost": "ca1.customer.pogofdev.com",
+        "pattern": "(\\w*)ca1.customer.pogofdev.com(\\w*)",
+        "sslTargetOverrideUrlSubstitutionExp": "ca1.customer.pogofdev.com",
+        "urlSubstitutionExp": "192.168.100.51:5002"
+      }
+    ]
+  }
+}
