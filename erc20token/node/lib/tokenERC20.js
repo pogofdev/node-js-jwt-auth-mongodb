@@ -205,8 +205,8 @@ class TokenERC20Contract extends Contract {
         const fromUpdatedBalance = fromCurrentBalance - valueInt;
         const toUpdatedBalance = toCurrentBalance + valueInt;
 
-        const transKey1 = ctx.stub.createCompositeKey(transactionKey, [from, to, timeStamp.toString()])
-        const transKey2 = ctx.stub.createCompositeKey(transactionKey, [to, from, timeStamp.toString()])
+        const transKey1 = ctx.stub.createCompositeKey(transactionKey, [from, timeStamp.toString()])
+        const transKey2 = ctx.stub.createCompositeKey(transactionKey, [to, timeStamp.toString()])
         const transaction = {from, to, amount: valueInt, fromUpdatedBalance, toUpdatedBalance, timeStamp,transType,description}
         await ctx.stub.putState(transKey1, Buffer.from(JSON.stringify(transaction)));
         await ctx.stub.putState(transKey2, Buffer.from(JSON.stringify(transaction)));
