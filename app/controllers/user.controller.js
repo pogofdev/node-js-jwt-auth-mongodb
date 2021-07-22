@@ -172,6 +172,31 @@ exports.transactions = async (req, res) => {
     // res.status(200).send("User Content.");
 };
 
+const PRICE = {
+    OI93EX:465,
+    ZMGPBJ:900,
+    QW5ZGQ:140,
+}
+
+exports.buy = async (req, res) => {
+
+    try {
+        console.log('====>', req.body)
+        let fromUser = await User.findById(req.userId).populate("roles", "-__v").exec();
+        if (!fromUser ) {
+            res.status(200).send({success: false, error: 'Recipient does not exist'});
+        } else {
+            let rs = await Invoke.buy(`${req.userId}-${Date.now()}`,fromUser.username,req.body.ticketType, req.body.quantity,PRICE[req.body.ticketType], Date.now())
+            console.log(rs)
+            res.status(200).send(rs);
+        }
+
+    } catch (e) {
+        res.status(200).send({success: false, error: e.toString()});
+    }
+
+};
+
 exports.adminBoard = (req, res) => {
     res.status(200).send("Admin Content.");
 };
