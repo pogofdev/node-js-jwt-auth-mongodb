@@ -42,7 +42,7 @@ exports.userBoard = (req, res) => {
                 username: result.username,
                 email: result.email,
                 roles: authorities,
-                ownedItems: 23,
+                // ownedItems: 0,
                 balance: myBalance && myBalance.balance ? myBalance.balance : 0,
                 totalSupply: myBalance && myBalance.totalSupply && user.username === 'integrate' ? myBalance.totalSupply : 0
             });
@@ -163,6 +163,51 @@ exports.transactions = async (req, res) => {
                throw 'Sorry!!!'
            }*/
         // console.log(toUser)
+
+
+    } catch (e) {
+        res.status(200).send({success: false, error: e.toString()});
+    }
+
+    // res.status(200).send("User Content.");
+};
+
+
+exports.getOwnerTickets = async (req, res) => {
+
+    try {
+        let fromUser = await User.findById(req.userId).populate("roles", "-__v").exec();
+        if (!fromUser) {
+            res.status(200).send({success: false, error: 'Recipient does not exist'});
+        } else {
+            let trans = []
+            let rs = []
+            var authorities = [];
+            for (let i = 0; i < fromUser.roles.length; i++) {
+                authorities.push(fromUser.roles[i].name.toUpperCase());
+            }
+            //lay thong tin current ballance
+            if (authorities[0] === 'INTEGRATE') {
+                rs = await Query.getIssuedTickets(fromUser.username)
+            } else {
+                rs = await Query.getOwnerTickets(fromUser.username)
+            }
+
+
+
+            // console.log('====>',rs)
+            try {
+
+                trans = rs.map((item) => {
+                    return item.Record
+                })
+            } catch (e) {
+
+            }
+            res.status(200).send(trans);
+
+        }
+
 
 
     } catch (e) {

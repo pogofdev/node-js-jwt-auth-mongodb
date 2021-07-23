@@ -7,6 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 const Ticket = require("./Ticket");
 const {Contract} = require('fabric-contract-api');
 
+const ticketKey = 'ticketKey'
 
 class TicketContract extends Contract {
 
@@ -45,11 +46,150 @@ class TicketContract extends Contract {
         ticket.setStatusNew()
         ticket.setBuyer(buyer)
         ticket.setOwner(buyer)
-        let key = ctx.stub.createCompositeKey(buyer, [ticketNumber, buyDateTime]);
+        let key = ctx.stub.createCompositeKey(ticketKey, ['integrate',buyer,ticketNumber, buyDateTime]);
         let data = Ticket.serialize(ticket);
         await ctx.stub.putState(key, data);
         return ticket
     }
+
+
+
+    async queryKeyByOwner(owner) {
+        //
+        let self = this;
+        if (arguments.length < 1) {
+            throw new Error('Incorrect number of arguments. Expecting owner name.');
+        }
+        let queryString = {};
+        queryString.selector = {};
+        //  queryString.selector.docType = 'indexOwnerDoc';
+        queryString.selector.owner = owner;
+        // set to (eg)  '{selector:{owner:MagnetoCorp}}'
+        let method = self.getQueryResultForQueryString;
+        let queryResults = await method(this.ctx, self, JSON.stringify(queryString));
+        return queryResults;
+    }
+
+    async getOwnerTickets(ctx, accountId) {
+        const startKey = '';
+        const endKey = '';
+        // const resultsIterator = await this.ctx.stub.getStateByPartialCompositeKey(transactionKey, [accountId]);
+
+
+        const allResults = [];
+        for await (const {key, value} of ctx.stub.getStateByPartialCompositeKey(ticketKey, ['integrate',accountId])) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            allResults.push({Key: key, Record: record});
+        }
+        console.info(allResults);
+        return (allResults);
+    }
+
+    async getIssuedTickets(ctx) {
+        const startKey = '';
+        const endKey = '';
+        // const resultsIterator = await this.ctx.stub.getStateByPartialCompositeKey(transactionKey, [accountId]);
+
+
+        const allResults = [];
+        for await (const {key, value} of ctx.stub.getStateByPartialCompositeKey(ticketKey, ['integrate'])) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            allResults.push({Key: key, Record: record});
+        }
+        console.info(allResults);
+        return (allResults);
+    }
+
+    async getQueryResultForQueryString(ctx, self, queryString) {
+
+        // console.log('- getQueryResultForQueryString queryString:\n' + queryString);
+
+        const resultsIterator = await ctx.stub.getQueryResult(queryString);
+        let results = await self.getAllResults(resultsIterator, false);
+
+        return results;
+
+    }
+
+    async getAllResults(iterator, isHistory) {
+        let allResults = [];
+        let res = { done: false, value: null };
+        return res
+        while (true) {
+            res = await iterator.next();
+            let jsonRes = {};
+            if (res.value && res.value.value.toString()) {
+                if (isHistory && isHistory === true) {
+                    //jsonRes.TxId = res.value.tx_id;
+                    jsonRes.TxId = res.value.txId;
+                    jsonRes.Timestamp = res.value.timestamp;
+                    jsonRes.Timestamp = new Date((res.value.timestamp.seconds.low * 1000));
+                    let ms = res.value.timestamp.nanos / 1000000;
+                    jsonRes.Timestamp.setMilliseconds(ms);
+                    if (res.value.is_delete) {
+                        jsonRes.IsDelete = res.value.is_delete.toString();
+                    } else {
+                        try {
+                            jsonRes.Value = JSON.parse(res.value.value.toString('utf8'));
+                            // report the commercial paper states during the asset lifecycle, just for asset history reporting
+                           /* switch (jsonRes.Value.currentState) {
+                                case 1:
+                                    jsonRes.Value.currentState = 'ISSUED';
+                                    break;
+                                case 2:
+                                    jsonRes.Value.currentState = 'PENDING';
+                                    break;
+                                case 3:
+                                    jsonRes.Value.currentState = 'TRADING';
+                                    break;
+                                case 4:
+                                    jsonRes.Value.currentState = 'REDEEMED';
+                                    break;
+                                default: // else, unknown named query
+                                    jsonRes.Value.currentState = 'UNKNOWN';
+                            }*/
+
+                        } catch (err) {
+                            console.log(err);
+                            jsonRes.Value = res.value.value.toString('utf8');
+                        }
+                    }
+                } else { // non history query ..
+                    jsonRes.Key = res.value.key;
+                    try {
+                        jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+                    } catch (err) {
+                        console.log(err);
+                        jsonRes.Record = res.value.value.toString('utf8');
+                    }
+                }
+                allResults.push(jsonRes);
+            }
+            // check to see if we have reached the end
+            if (res.done) {
+                // explicitly close the iterator
+                console.log('iterator is done');
+                await iterator.close();
+                return allResults;
+            }
+
+        }  // while true
+    }
+
 
 }
 

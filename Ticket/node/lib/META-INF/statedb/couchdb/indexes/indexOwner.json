@@ -1,0 +1,16 @@
+{
+    "index": {
+        "fields": [
+            "ticketNumber",
+            "buyer",
+            "ticketType",
+            "price",
+            "buyDateTime",
+            "owner",
+            "status"
+        ]
+    },
+    "ddoc": "indexOwnerDoc",
+    "name": "indexOwner",
+    "type": "json"
+}
