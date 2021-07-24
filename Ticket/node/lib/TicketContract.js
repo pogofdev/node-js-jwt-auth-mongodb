@@ -38,6 +38,42 @@ class TicketContract extends Contract {
         return tickets
     }
 
+    async use(ctx,ticketNumbers, user, useDateTime) {
+        let tknumbers = ticketNumbers.split(',')
+        // throw new Error(`tknumbers: ${tknumbers.length}`)
+        for(let i=0;i<tknumbers.length;i++){
+            let ticketNumber = tknumbers[i]
+
+            //lay ticket do ra chac chan chi co 1 ma thoi
+            const allResults = [];
+            for await (const {key, value} of ctx.stub.getStateByPartialCompositeKey(ticketKey, ['integrate',user,ticketNumber])) {
+                const strValue = Buffer.from(value).toString('utf8');
+                let record;
+                try {
+                    record = JSON.parse(strValue);
+                } catch (err) {
+                    console.log(err);
+                    record = strValue;
+                }
+                allResults.push({Key: key, Record: record});
+            }
+            console.info(allResults);
+            if(allResults.length===0)  throw new Error(`Cannot find ticket ${ticketNumber}`);
+            //xoa record cu
+            let buyDateTime = (ticketNumber.split('-'))[1]
+            let deleteKey = ctx.stub.createCompositeKey(ticketKey, ['integrate',user,ticketNumber,buyDateTime]);
+            await ctx.stub.deleteState(deleteKey);
+            //tao record moi va chuyen owner sang oildepot
+            let key = ctx.stub.createCompositeKey(ticketKey, ['integrate',`oildepot`,ticketNumber, useDateTime]);
+            let ticket = new Ticket(allResults[0].Record)
+            ticket.setOwner('oildepot')
+            ticket.setStatusUsed()
+            let data = Ticket.serialize(ticket);
+            await ctx.stub.putState(key, data);
+        }
+       return {success:true}
+    }
+
 
     async _issue(ctx, ticketNumber, buyer, ticketType,  price, buyDateTime) {
         let ticket = Ticket.createInstance(ticketNumber, buyer, ticketType,  price, buyDateTime)

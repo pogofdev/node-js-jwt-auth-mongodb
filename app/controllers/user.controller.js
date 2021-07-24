@@ -242,6 +242,25 @@ exports.buy = async (req, res) => {
 
 };
 
+exports.use = async (req, res) => {
+
+    try {
+        console.log('====>', req.body)
+        let fromUser = await User.findById(req.userId).populate("roles", "-__v").exec();
+        if (!fromUser ) {
+            res.status(200).send({success: false, error: 'Recipient does not exist'});
+        } else {
+            let rs = await Invoke.use(req.body.ticketNumbers,fromUser.username, Date.now())
+            console.log(rs)
+            res.status(200).send(rs);
+        }
+
+    } catch (e) {
+        res.status(200).send({success: false, error: e.toString()});
+    }
+
+};
+
 exports.adminBoard = (req, res) => {
     res.status(200).send("Admin Content.");
 };

@@ -30,6 +30,10 @@ class Ticket {
         this.status = STATUS.NEW
     }
 
+    setStatusUsed(){
+        this.status = STATUS.USED
+    }
+
     static fromBuffer(buffer) {
         return Ticket.deserializeClass(buffer,Ticket);
     }
