@@ -93,7 +93,7 @@ exports.transfer = async (req, res) => {
         if (!fromUser || !toUser) {
             res.status(200).send({success: false, error: 'Recipient does not exist'});
         } else {
-            let rs = await Invoke.transfer(fromUser.username, toUser.username, req.body.amount, Date.now(),TRANS_TYPE.TRANSFER_TOKENS,'')
+            let rs = await Invoke.transfer(fromUser.username, toUser.username, req.body.amount, Date.now(),TRANS_TYPE.TRANSFER_TOKENS,fromUser.username ==='integrate' ? `Buy tokens`:`Transfer tokens to other user`)
             res.status(200).send(rs);
         }
         /*   var authorities = [];
@@ -217,10 +217,52 @@ exports.getOwnerTickets = async (req, res) => {
     // res.status(200).send("User Content.");
 };
 
+exports.getRedeemTickets = async (req, res) => {
+
+    try {
+        let fromUser = await User.findById(req.userId).populate("roles", "-__v").exec();
+        if (!fromUser) {
+            res.status(200).send({success: false, error: 'Recipient does not exist'});
+        } else {
+            let trans = []
+            let rs = []
+            var authorities = [];
+            for (let i = 0; i < fromUser.roles.length; i++) {
+                authorities.push(fromUser.roles[i].name.toUpperCase());
+            }
+            //lay thong tin current ballance
+            if (authorities[0] === 'INTEGRATE') {
+                rs = await Query.getRedeemTickets(fromUser.username)
+            }
+
+
+
+            // console.log('====>',rs)
+            try {
+
+                trans = rs.map((item) => {
+                    return item.Record
+                })
+            } catch (e) {
+
+            }
+            res.status(200).send(trans);
+
+        }
+
+
+
+    } catch (e) {
+        res.status(200).send({success: false, error: e.toString()});
+    }
+
+    // res.status(200).send("User Content.");
+};
+
 const PRICE = {
-    OI93EX:465,
-    ZMGPBJ:900,
-    QW5ZGQ:140,
+    OI93EX:465000,
+    ZMGPBJ:900000,
+    QW5ZGQ:140000,
 }
 
 exports.buy = async (req, res) => {
@@ -250,7 +292,19 @@ exports.use = async (req, res) => {
         if (!fromUser ) {
             res.status(200).send({success: false, error: 'Recipient does not exist'});
         } else {
-            let rs = await Invoke.use(req.body.ticketNumbers,fromUser.username, Date.now())
+            var authorities = [];
+            let rs = {}
+            for (let i = 0; i < fromUser.roles.length; i++) {
+                authorities.push(fromUser.roles[i].name.toUpperCase());
+            }
+            //neu la oildepot use thi la redeem ticket
+            //nguoc lai la user su dung ticket
+            if (authorities[0].toUpperCase() === 'OILDEPOT') {
+                rs = await Invoke.redeem(req.body.ticketNumbers,fromUser.username, Date.now())
+            } else {
+                rs = await Invoke.use(req.body.ticketNumbers,fromUser.username, Date.now())
+            }
+
             console.log(rs)
             res.status(200).send(rs);
         }

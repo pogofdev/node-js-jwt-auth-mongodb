@@ -8,6 +8,7 @@ const Ticket = require("./Ticket");
 const {Contract} = require('fabric-contract-api');
 
 const ticketKey = 'ticketKey'
+const ticketRedeemKey = 'ticketRedeemKey'
 
 class TicketContract extends Contract {
 
@@ -65,11 +66,58 @@ class TicketContract extends Contract {
             await ctx.stub.deleteState(deleteKey);
             //tao record moi va chuyen owner sang oildepot
             let key = ctx.stub.createCompositeKey(ticketKey, ['integrate',`oildepot`,ticketNumber, useDateTime]);
+            allResults[0].Record.useDateTime = useDateTime
             let ticket = new Ticket(allResults[0].Record)
             ticket.setOwner('oildepot')
             ticket.setStatusUsed()
             let data = Ticket.serialize(ticket);
             await ctx.stub.putState(key, data);
+        }
+       return {success:true}
+    }
+
+    async redeem(ctx,ticketNumbers, user, redeemDateTime) {
+        let tknumbers = ticketNumbers.split(',')
+        // throw new Error(`tknumbers: ${tknumbers.length}`)
+        let redeemTokens = 0;
+        for(let i=0;i<tknumbers.length;i++){
+            let ticketNumber = tknumbers[i]
+
+            //lay ticket do ra chac chan chi co 1 ma thoi
+            const allResults = [];
+            for await (const {key, value} of ctx.stub.getStateByPartialCompositeKey(ticketKey, ['integrate',user,ticketNumber])) {
+                const strValue = Buffer.from(value).toString('utf8');
+                let record;
+                try {
+                    record = JSON.parse(strValue);
+                } catch (err) {
+                    console.log(err);
+                    record = strValue;
+                }
+                allResults.push({Key: key, Record: record});
+            }
+            console.info(allResults);
+            if(allResults.length===0)  throw new Error(`Cannot find ticket ${ticketNumber}`);
+            //xoa record cu
+            let useDateTime = allResults[0].Record.useDateTime
+            let deleteKey = ctx.stub.createCompositeKey(ticketKey, ['integrate',user,ticketNumber,useDateTime]);
+            await ctx.stub.deleteState(deleteKey);
+            //tao record moi va chuyen owner sang oildepot
+            let key = ctx.stub.createCompositeKey(ticketRedeemKey, ['integrate',user,ticketNumber, redeemDateTime]);
+            allResults[0].Record.redeemDateTime = redeemDateTime
+            let ticket = new Ticket(allResults[0].Record)
+            // ticket.setOwner('integrate')
+            ticket.setStatusRedeem()
+            let data = Ticket.serialize(ticket);
+            await ctx.stub.putState(key, data);
+            redeemTokens += (parseInt(allResults[0].Record.price) * 0.1)
+
+        }
+
+        //chuyen tien lai
+        const cc1Res = await ctx.stub.invokeChaincode('erc20token', ["Transfer",'integrate',user,`${redeemTokens}`,`${redeemDateTime}`,'REDEEM_TICKET',`Redeem ticket: ${ticketNumbers}`]);
+        if (cc1Res.status !== 200) {
+            throw new Error(cc1Res.message);
         }
        return {success:true}
     }
@@ -127,6 +175,29 @@ class TicketContract extends Contract {
         console.info(allResults);
         return (allResults);
     }
+
+    async getRedeemTickets(ctx, accountId) {
+        const startKey = '';
+        const endKey = '';
+        // const resultsIterator = await this.ctx.stub.getStateByPartialCompositeKey(transactionKey, [accountId]);
+
+
+        const allResults = [];
+        for await (const {key, value} of ctx.stub.getStateByPartialCompositeKey(ticketRedeemKey, ['integrate'])) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            allResults.push({Key: key, Record: record});
+        }
+        console.info(allResults);
+        return (allResults);
+    }
+
 
     async getIssuedTickets(ctx) {
         const startKey = '';

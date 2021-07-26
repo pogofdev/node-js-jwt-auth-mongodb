@@ -175,6 +175,46 @@ const Invoke = {
         }
     },
 
+    redeem: async function (ticketNumbers, user, redeemDateTime) {
+        try {
+
+            const ccp = buildCCPIntegrate();
+
+            // setup the wallet to hold the credentials of the application user
+            const wallet = await buildWallet(Wallets, walletPath);
+
+
+            // Check to see if we've already enrolled the user.
+            const identity = await wallet.get(user);
+            if (!identity) {
+                console.log(`An identity for the user "${user}" does not exist in the wallet`);
+                return;
+            }
+
+            // Create a new gateway for connecting to our peer node.
+            const gateway = new Gateway();
+            await gateway.connect(ccp, { wallet, identity: user, discovery: { enabled: true, asLocalhost: true } });
+
+            // Get the network (channel) our contract is deployed to.
+            const network = await gateway.getNetwork(channelName);
+
+            // Get the contract from the network.
+            const contract = network.getContract('Ticket');
+            console.log('===>',ticketNumbers, user, redeemDateTime)
+            let rs = await contract.submitTransaction('redeem',ticketNumbers.toString(), user, redeemDateTime.toString());
+
+            console.log('Transaction has been submitted');
+
+            // Disconnect from the gateway.
+            await gateway.disconnect();
+            return JSON.parse(rs.toString())
+
+        } catch (error) {
+            console.error(`Failed to submit transaction: ${error}`);
+            return {success:false,error:`Failed to submit transaction: ${error}`}
+        }
+    },
+
 
 }
 

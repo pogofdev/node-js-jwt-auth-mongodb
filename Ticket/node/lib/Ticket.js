@@ -4,7 +4,7 @@
 const STATUS = {
     NEW:'NEW',
     USED:'USED',
-    REDEEM:'REDEEM'
+    REDEEM:'REDEEMED'
 }
 
 
@@ -32,6 +32,10 @@ class Ticket {
 
     setStatusUsed(){
         this.status = STATUS.USED
+    }
+
+    setStatusRedeem(){
+        this.status = STATUS.REDEEM
     }
 
     static fromBuffer(buffer) {
