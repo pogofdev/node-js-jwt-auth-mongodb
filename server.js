@@ -9,6 +9,7 @@ var corsOptions = {
   origin: "*"
 };
 
+
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
@@ -21,7 +22,7 @@ const db = require("./app/models");
 const Register = require("./app/blockchain/businesses/Register");
 const Role = db.role;
 const User = db.user;
-
+app.use(express.static('public'))
 db.mongoose
   .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
     useNewUrlParser: true,
