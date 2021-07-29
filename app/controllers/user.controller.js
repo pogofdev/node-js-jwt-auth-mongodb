@@ -289,6 +289,7 @@ exports.use = async (req, res) => {
     try {
         console.log('====>', req.body)
         let fromUser = await User.findById(req.userId).populate("roles", "-__v").exec();
+
         if (!fromUser ) {
             res.status(200).send({success: false, error: 'Recipient does not exist'});
         } else {
@@ -299,10 +300,15 @@ exports.use = async (req, res) => {
             }
             //neu la OIL_DEPOT_SHOP use thi la redeem ticket
             //nguoc lai la user su dung ticket
+
             if (authorities[0].toUpperCase() === 'OIL_DEPOT_SHOP') {
                 rs = await Invoke.redeem(req.body.ticketNumbers,fromUser.username, Date.now())
             } else {
-                rs = await Invoke.use(req.body.ticketNumbers,fromUser.username, Date.now())
+                let shopUser = await User.findOne({
+                    username: req.body.shopUsername
+                }).populate("roles", "-__v").exec();
+                if(!shopUser) res.status(200).send({success: false, error: 'Shop does not exist'});
+                rs = await Invoke.use(req.body.ticketNumbers,fromUser.username,shopUser.username, Date.now())
             }
 
             console.log(rs)

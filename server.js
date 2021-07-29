@@ -56,6 +56,7 @@ async function initial() {
     await Register.Initial()
     await Register.user('integrate')
     await Register.user('oildepot')
+    await Register.user('oildepotshop')
     Role.estimatedDocumentCount((err, count) => {
         if (!err && count === 0) {
             const Register = require('./app/blockchain/businesses/Register')

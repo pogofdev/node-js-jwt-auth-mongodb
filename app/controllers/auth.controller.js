@@ -8,9 +8,11 @@ var bcrypt = require("bcryptjs");
 const Register = require("../blockchain/businesses/Register");
 
 exports.signup = (req, res) => {
+    console.log('register user',req.body.roles[0])
   const user = new User({
     username: req.body.username,
     email: req.body.email,
+      // roles:req.body.roles,
     password: bcrypt.hashSync(req.body.password, 8)
   });
 

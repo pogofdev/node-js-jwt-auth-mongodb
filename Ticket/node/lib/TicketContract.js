@@ -39,7 +39,7 @@ class TicketContract extends Contract {
         return tickets
     }
 
-    async use(ctx,ticketNumbers, user, useDateTime) {
+    async use(ctx,ticketNumbers, user,shop, useDateTime) {
         let tknumbers = ticketNumbers.split(',')
         // throw new Error(`tknumbers: ${tknumbers.length}`)
         for(let i=0;i<tknumbers.length;i++){
@@ -65,10 +65,10 @@ class TicketContract extends Contract {
             let deleteKey = ctx.stub.createCompositeKey(ticketKey, ['integrate',user,ticketNumber,buyDateTime]);
             await ctx.stub.deleteState(deleteKey);
             //tao record moi va chuyen owner sang oildepot
-            let key = ctx.stub.createCompositeKey(ticketKey, ['integrate',`oildepot`,ticketNumber, useDateTime]);
+            let key = ctx.stub.createCompositeKey(ticketKey, ['integrate',shop,ticketNumber, useDateTime]);
             allResults[0].Record.useDateTime = useDateTime
             let ticket = new Ticket(allResults[0].Record)
-            ticket.setOwner('oildepot')
+            ticket.setOwner(shop)
             ticket.setStatusUsed()
             let data = Ticket.serialize(ticket);
             await ctx.stub.putState(key, data);

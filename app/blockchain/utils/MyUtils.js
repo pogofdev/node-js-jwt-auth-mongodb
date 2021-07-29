@@ -11,7 +11,7 @@ const path = require('path');
 
 exports.buildCCPIntegrate = () => {
     // load the common connection configuration file
-    const ccpPath = path.resolve(__dirname, '..', 'connection', 'integrate_connection_for_nodesdk.json');
+    const ccpPath = path.resolve(__dirname, '..', 'connection', 'mychannel_connection_for_nodesdk.json');
     const fileExists = fs.existsSync(ccpPath);
     if (!fileExists) {
         throw new Error(`no such file or directory: ${ccpPath}`);

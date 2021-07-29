@@ -135,7 +135,7 @@ const Invoke = {
     },
 
 
-    use: async function (ticketNumbers, user, useDateTime) {
+    use: async function (ticketNumbers, user,shop, useDateTime) {
         try {
 
             const ccp = buildCCPIntegrate();
@@ -161,7 +161,7 @@ const Invoke = {
             // Get the contract from the network.
             const contract = network.getContract('Ticket');
             console.log('===>',ticketNumbers, user, useDateTime)
-            let rs = await contract.submitTransaction('use',ticketNumbers.toString(), user, useDateTime.toString());
+            let rs = await contract.submitTransaction('use',ticketNumbers.toString(), user,shop, useDateTime.toString());
 
             console.log('Transaction has been submitted');
 
