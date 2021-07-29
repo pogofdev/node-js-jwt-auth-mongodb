@@ -140,6 +140,42 @@ async function initial() {
             });
 
             new Role({
+                name: "oil_depot_shop"
+            }).save(err => {
+                if (err) {
+                    console.log("error", err);
+                }
+
+                console.log("added 'oil_depot_shop' to roles collection");
+
+                const user = new User({
+                    username: 'oildepotshop',
+                    email: 'oildepotshop@gmail.com',
+                    password: bcrypt.hashSync('helloworld', 8)
+                });
+
+                Role.find(
+                    {
+                        name: {$in: ['oil_depot_shop']}
+                    },
+                    (err, roles) => {
+                        if (err) {
+                            console.log(err)
+                        }
+                        user.roles = roles.map(role => role._id);
+                        user.save((err, user) => {
+                            if (err) {
+                                console.log("Failed to create user 'oildepotshop' with default password", err);
+                            }
+                            console.log("create user 'oildepotshop' with default password");
+                        })
+                    }
+                );
+
+
+            });
+
+            new Role({
                 name: "admin"
             }).save(err => {
                 if (err) {

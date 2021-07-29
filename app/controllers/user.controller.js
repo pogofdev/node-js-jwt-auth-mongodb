@@ -297,9 +297,9 @@ exports.use = async (req, res) => {
             for (let i = 0; i < fromUser.roles.length; i++) {
                 authorities.push(fromUser.roles[i].name.toUpperCase());
             }
-            //neu la oildepot use thi la redeem ticket
+            //neu la OIL_DEPOT_SHOP use thi la redeem ticket
             //nguoc lai la user su dung ticket
-            if (authorities[0].toUpperCase() === 'OILDEPOT') {
+            if (authorities[0].toUpperCase() === 'OIL_DEPOT_SHOP') {
                 rs = await Invoke.redeem(req.body.ticketNumbers,fromUser.username, Date.now())
             } else {
                 rs = await Invoke.use(req.body.ticketNumbers,fromUser.username, Date.now())
